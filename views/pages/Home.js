@@ -18,7 +18,7 @@ async function ChangeDate(elem, mess) {
         document.querySelector('td.active').setAttribute("class", "days");
     }
     if (elem != null) {
-        if (!elem.classList.contains("today")) elem.setAttribute("class", "active");
+        if (!elem.classList.contains("today") & elem.classList.contains("days")) elem.setAttribute("class", "active");
     }
 
 
@@ -61,9 +61,9 @@ async function ChangeDate(elem, mess) {
             input.setAttribute(`id`, `hd${count}`);
             var label = document.createElement("label");
             label.setAttribute("for", `hd${count}`);
+            label.setAttribute("style", `color:${element.color}`);
             label.innerText = element.title;
             var div = document.createElement("div");
-            label.setAttribute("for", `hd${count}`);
             var p = document.createElement("p");
             p.innerText = element.description;
             div.appendChild(p);
@@ -201,10 +201,15 @@ function calendar(id, year, month) {
         }
     }
     for (var i = DNlast; i < 7; i++) {
-        td = document.createElement("td");
-        td.innerText = '  ';
-        tr1.appendChild(td);
+        let elem=document.createElement("td");
+        elem.innerHTML+='<td>&nbsp;';
+        //td = document.createElement("td");
+        //td.textContent = ' ';
+        //tr1.innerHTML+="&nbsp;"
+        
+        tr1.appendChild(elem);
     }
+
 
     calendar1.appendChild(tr1);
     document.getElementById('calendarbody').innerHTML = " ";
@@ -213,7 +218,7 @@ function calendar(id, year, month) {
     document.querySelector('#' + id + ' thead td:nth-child(2)').dataset.month = D.getMonth();
     document.querySelector('#' + id + ' thead td:nth-child(2)').dataset.year = D.getFullYear();
     if (document.querySelectorAll('.calendarbody tr').length < 6) {  // чтобы при перелистывании месяцев не "подпрыгивала" вся страница, добавляется ряд пустых клеток. Итог: всегда 6 строк для цифр
-        document.getElementById('calendarbody').innerHTML += '<tr><td> <td> <td> <td> <td> <td> <td> </tr>';
+        document.getElementById('calendarbody').innerHTML += '<tr> <td> <td> <td> <td> <td> <td> <td> </tr>';
     }
 }
 
