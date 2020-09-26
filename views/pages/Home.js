@@ -25,10 +25,8 @@ async function ChangeDate(elem, mess) {
     let apps = [];
     let keys = [];
     let ref = firebase.database().ref(`mydb/appointments`);
-
     let uid;
     let date;
-
     date = new Date(`${mess}`);
     currentdate=date;
 
@@ -114,7 +112,6 @@ async function ChangeDate(elem, mess) {
             checkbox.setAttribute("id", "active");
             if (element.active) checkbox.removeAttribute("checked");
             else checkbox.setAttribute("checked", "checked");
-            //checkbox.setAttribute("onClick", `ChangeStateApp('${keys[apps.indexOf(element)]}')`);
             checkbox.addEventListener('click', async () => {
 
                 let ref = firebase.database().ref(`mydb/appointments/${keys[apps.indexOf(element)]}/active`);
