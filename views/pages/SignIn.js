@@ -24,6 +24,7 @@ let SignIn = {
     // All the code related to DOM interactions and controls go in here.
     // This is a separate call as these can be registered only after the DOM has been painted
     , after_render: async () => {
+        Auth.SignOut();
         document.getElementById("signinbtn").addEventListener("click", () => {
             let email = document.getElementById("userEmail").value;
             let pass = document.getElementById("userPassword").value;

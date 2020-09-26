@@ -17,8 +17,8 @@ let Navbar = {
                             <a class="navbar-item" href="/#/about">
                                 About
                             </a>                           
-                            <a class="navbar-item" href="/#/secret">
-                                sign out
+                            <a class="navbar-item" href="/#/signin">
+                                Sign out
                             </a>
                         </div>
                         <div class="navbar-end">
