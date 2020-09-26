@@ -52,7 +52,7 @@ let EditApp = {
                 </p>
                 <p>
                     <label for="place"><b>Place</b></label>
-                    <input type="text" id="place" placeholder="Enter place name="place"><br>
+                    <input type="text" id="place" placeholder="Enter place name"place"><br>
                 </p>
                 <p>
                     <label for="list1"><b>Remind</b></label>

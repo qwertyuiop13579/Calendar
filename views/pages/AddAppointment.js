@@ -35,7 +35,7 @@ let AddApp = {
                 </p>
                 <p>
                     <label for="place"><b>Place</b></label>
-                    <input type="text" id="place" placeholder="Enter place name="place"><br>
+                    <input type="text" id="place" placeholder="Enter place name"place"><br>
                 </p>
                 <p>
                     <label for="list1"><b>Remind</b></label>
@@ -115,6 +115,7 @@ let AddApp = {
             }
 
 
+            
 
             let uid = firebase.auth().currentUser.uid;
             let active = true;
