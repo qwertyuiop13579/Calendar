@@ -1,17 +1,25 @@
 import Utils from "../../services/Utils.js";
 
 let getApp = async (id) => {
-    
-   try {
-    let ref = firebase.database().ref(`mydb/appointments/${id}`);
-    let app;
-    await ref.once("value").then(function (item) {
-        app = item.val();
-      })
-      return app
-   } catch (err) {
-       console.log('Error getting appointment', err.message)
-   }
+
+    try {
+        let ref = firebase.database().ref(`mydb/appointments/${id}`);
+        let app;
+        let reminders = []
+        await ref.once("value").then(function (item) {
+            app = item.val();
+        })
+
+        ref = firebase.database().ref(`mydb/appointments/${id}/reminders`)
+        await ref.once("value").then(function (rems) {
+            rems.forEach((rem) => {
+                reminders.push(rem.val())
+            });
+        });
+        return { app: app, rems: reminders }
+    } catch (err) {
+        console.log('Error getting appointment', err.message)
+    }
 }
 
 
@@ -84,7 +92,37 @@ let EditApp = {
     , after_render: async () => {
 
         let request = Utils.parseRequestURL()
-        let currapp= await getApp(request.id)
+        let res = await getApp(request.id)
+        let currapp = res.app
+        let rems = res.rems
+
+        document.getElementById("title").value = currapp.title;
+        document.getElementById("description").value = currapp.description;
+        document.getElementById("date1").value = currapp.date1;
+        document.getElementById("time1").value = currapp.time1;
+        document.getElementById("time2").value = currapp.time2;
+        document.getElementById("place").value = currapp.place;
+        document.getElementById("color").value = currapp.color;
+
+        rems.forEach(element => {
+            var list = document.getElementById("listrem");
+            var li = document.createElement("li");
+            var input = document.createElement("input")
+            input.setAttribute("type", "time");
+            input.setAttribute("id", `idlist${list.childElementCount}`);
+            input.setAttribute("value", element)
+            li.appendChild(input);
+            var btn = document.createElement("button");
+            btn.innerText = "D";
+            btn.addEventListener('click', () => {
+                list.removeChild(li)
+            })
+            li.appendChild(btn);
+            list.appendChild(li);
+
+        });
+        
+
 
         document.getElementById("addrem").addEventListener("click", () => {
             var list = document.getElementById("listrem");
@@ -93,6 +131,12 @@ let EditApp = {
             input.setAttribute("type", "time");
             input.setAttribute("id", `idlist${list.childElementCount}`);
             li.appendChild(input);
+            var btn = document.createElement("button");
+            btn.innerText = "D";
+            btn.addEventListener('click', () => {
+                list.removeChild(li)
+            })
+            li.appendChild(btn);
             list.appendChild(li);
         });
 
@@ -129,7 +173,7 @@ let EditApp = {
             }
 
             if (title === "" || description === "" || date1 === "" || time1 === "" || time2 === "" || place === "" || color === "") {
-                
+
                 alert("Fill in the fields.");
                 return;
             }

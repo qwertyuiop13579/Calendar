@@ -37,7 +37,7 @@ const Functions = {
                 }
             });
         });
-        return apps;
+        return {arr1:apps,arr2:keys};
     },
 
 }

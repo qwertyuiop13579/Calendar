@@ -73,6 +73,12 @@ let AddApp = {
             input.setAttribute("type", "time");
             input.setAttribute("id", `idlist${list.childElementCount}`);
             li.appendChild(input);
+            var btn = document.createElement("button");
+            btn.innerText = "D";
+            btn.addEventListener('click', () => {
+                list.removeChild(li)
+            })
+            li.appendChild(btn);
             list.appendChild(li);
         });
 
@@ -108,7 +114,7 @@ let AddApp = {
                 else break;
             }
 
-            if (title === "" || description === "" || date1 === "" || time1 === "" || time2 === "" || place === "" || color === "") {
+            if (title === "" || description === "" || date1 === "" || time1 === "" || time2 === "" || place === "" || color === ""||time1>time2) {
                 
                 alert("Fill in the fields.");
                 return;
