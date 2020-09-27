@@ -314,12 +314,11 @@ async function SetReminders(date1) {
 
 let Home = {
     render: async () => {
-
-        firebase.auth().onAuthStateChanged(async function (user) {
+        await firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 
             } else {
-                Utils.navigateTo("#/SignIn")
+                Utils.navigateTo("#/signin")
                 // No user is signed in.
             }
         });
@@ -394,18 +393,10 @@ let Home = {
         ColorTd()
 
 
-
         var CurrentDateString = formattedDate(new Date());
         //var CurrentDateString = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + `${date.getDate()}`).slice(-2);
         ChangeDate(null, `${CurrentDateString}`);
-
-
-
         SetReminders(CurrentDateString)
-
-
-
-
     }
 
 }

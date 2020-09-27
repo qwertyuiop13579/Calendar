@@ -33,7 +33,7 @@ let Auth = {
                 if (error) {
                     console.log(error.message);
                 } else {
-                    Utils.navigateTo("/signin");
+                    Utils.navigateTo("#/signin")
                 }
             });
         }).catch((error) => {
