@@ -314,6 +314,16 @@ async function SetReminders(date1) {
 
 let Home = {
     render: async () => {
+
+        firebase.auth().onAuthStateChanged(async function (user) {
+            if (user) {
+                
+            } else {
+                Utils.navigateTo("#/SignIn")
+                // No user is signed in.
+            }
+        });
+
         let view =  /*html*/`
            <section class="section">
            <div>
