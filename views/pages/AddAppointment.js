@@ -1,4 +1,4 @@
-import Utils from "../../services/Utils.js";
+import Utils from "../../services/utils.js";
 
 let AddApp = {
 
@@ -35,7 +35,7 @@ let AddApp = {
                 </p>
                 <p>
                     <label for="place"><b>Place</b></label>
-                    <input type="text" id="place" placeholder="Enter place name="place"><br>
+                    <input type="text" id="place" placeholder="Enter place name"place"><br>
                 </p>
                 <p>
                     <label for="list1"><b>Remind</b></label>
@@ -73,6 +73,12 @@ let AddApp = {
             input.setAttribute("type", "time");
             input.setAttribute("id", `idlist${list.childElementCount}`);
             li.appendChild(input);
+            var btn = document.createElement("button");
+            btn.innerText = "D";
+            btn.addEventListener('click', () => {
+                list.removeChild(li)
+            })
+            li.appendChild(btn);
             list.appendChild(li);
         });
 
@@ -108,13 +114,14 @@ let AddApp = {
                 else break;
             }
 
-            if (title === "" || description === "" || date1 === "" || time1 === "" || time2 === "" || place === "" || color === "") {
+            if (title === "" || description === "" || date1 === "" || time1 === "" || time2 === "" || place === "" || color === ""||time1>time2) {
                 
                 alert("Fill in the fields.");
                 return;
             }
 
 
+            
 
             let uid = firebase.auth().currentUser.uid;
             let active = true;

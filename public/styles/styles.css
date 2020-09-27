@@ -133,7 +133,7 @@
 }
 
 .section {
-    padding: 3rem 1.5rem;
+    padding: 1rem 1rem;
     display: block;
 }
 
@@ -473,7 +473,7 @@
     
   }
   #calendar thead tr:last-child {
-    font-size: small;
+
     color: rgb(85, 85, 85);
   }
   #calendar thead tr:nth-child(1) td:nth-child(2) {

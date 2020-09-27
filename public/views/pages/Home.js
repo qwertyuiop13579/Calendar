@@ -1,4 +1,5 @@
-import Utils from './../../services/Utils.js'
+import Utils from '../../services/utils.js'
+import Functions from './../../services/data.js'
 
 
 let currentdate = new Date();
@@ -12,13 +13,14 @@ function formattedDate(d = new Date) {
     return `${year}/${month}/${day}`;
 }
 
+
 async function ChangeDate(elem, mess) {
 
     if (document.querySelectorAll('td.active').length != 0) {
-        document.querySelector('td.active').setAttribute("class", "days");
+        document.querySelector('td.active').classList.remove("active");
     }
     if (elem != null) {
-        if (!elem.classList.contains("today")) elem.setAttribute("class", "active");
+        if (!elem.classList.contains("today") & elem.classList.contains("days")) elem.classList.add("active");
     }
 
 
@@ -30,14 +32,15 @@ async function ChangeDate(elem, mess) {
     let date;
 
     date = new Date(`${mess}`);
-    currentdate=date;
+    currentdate = date;
+    document.querySelector('#listhead').innerText = `Appointments on ${Utils.formattedDate(date)}`;
 
     await ref.once("value").then(function (arr) {
         uid = firebase.auth().currentUser.uid;
         arr.forEach(function (item) {
             let app = item.val();
 
-            if (uid == app.uid && date.getDate() == (new Date(app.date1)).getDate()) {
+            if (uid == app.uid && Utils.formattedDate(date) == Utils.formattedDate(new Date(app.date1))) {
                 apps.push(app);
                 keys.push(item.key);
             }
@@ -52,7 +55,7 @@ async function ChangeDate(elem, mess) {
 
 
     if (apps.length != 0) {
-        apps.forEach((element) => {
+        apps.forEach(async (element) => {
 
             var li = document.createElement("li");
             var input = document.createElement("input");
@@ -61,9 +64,9 @@ async function ChangeDate(elem, mess) {
             input.setAttribute(`id`, `hd${count}`);
             var label = document.createElement("label");
             label.setAttribute("for", `hd${count}`);
+            label.setAttribute("style", `color:${element.color}`);
             label.innerText = element.title;
             var div = document.createElement("div");
-            label.setAttribute("for", `hd${count}`);
             var p = document.createElement("p");
             p.innerText = element.description;
             div.appendChild(p);
@@ -79,10 +82,10 @@ async function ChangeDate(elem, mess) {
             button.setAttribute("class", "b-little");
             button.innerText = "Edit";
             //button.setAttribute("onClick", `ReplaceToEditApp('${keys[apps.indexOf(element)]}')`);
-            button.addEventListener('click',()=>{
+            button.addEventListener('click', () => {
                 Utils.navigateTo(`#/editappointment/${keys[apps.indexOf(element)]}`)
             })
-            
+
             div.appendChild(button);
 
 
@@ -91,15 +94,16 @@ async function ChangeDate(elem, mess) {
             button.setAttribute("class", "b-little");
             button.innerText = "Delete";
             //button.setAttribute("onClick", `DeleteApp('${keys[apps.indexOf(element)]}')`);
-            button.addEventListener('click',async ()=>{
+            button.addEventListener('click', async () => {
                 let ref = firebase.database().ref(`mydb/appointments/${keys[apps.indexOf(element)]}`);
                 ref.remove().then(function () {
-                  console.log("Remove succeeded.")
+                    console.log("Remove succeeded.")
                 })
-                  .catch(function (error) {
-                    console.log("Remove failed: " + error.message)
-                  });
+                    .catch(function (error) {
+                        console.log("Remove failed: " + error.message)
+                    });
                 ChangeDate(null, currentdate);
+                ColorTd()
             })
             div.appendChild(button);
 
@@ -182,11 +186,12 @@ function calendar(id, year, month) {
     }
 
     for (var i = 1; i <= Dlast; i++) {
-        //CurrentDateString = D.getFullYear() + "/" + ('0' + (D.getMonth() + 1)).slice(-2) + "/" + ('0' + `${i}`).slice(-2);
+        let CurrentDateString = D.getFullYear() + "/" + ('0' + (D.getMonth() + 1)).slice(-2) + "/" + ('0' + `${i}`).slice(-2);
 
         if (i == new Date().getDate() && D.getFullYear() == new Date().getFullYear() && D.getMonth() == new Date().getMonth()) {
             td = document.createElement("td");
             td.setAttribute("class", "today days");
+
             td.innerText = i;
             tr1.appendChild(td);
         } else {
@@ -201,10 +206,15 @@ function calendar(id, year, month) {
         }
     }
     for (var i = DNlast; i < 7; i++) {
-        td = document.createElement("td");
-        td.innerText = '  ';
-        tr1.appendChild(td);
+        let elem = document.createElement("td");
+        elem.innerHTML += '<td>&nbsp;';
+        //td = document.createElement("td");
+        //td.textContent = ' ';
+        //tr1.innerHTML+="&nbsp;"
+
+        tr1.appendChild(elem);
     }
+
 
     calendar1.appendChild(tr1);
     document.getElementById('calendarbody').innerHTML = " ";
@@ -213,13 +223,106 @@ function calendar(id, year, month) {
     document.querySelector('#' + id + ' thead td:nth-child(2)').dataset.month = D.getMonth();
     document.querySelector('#' + id + ' thead td:nth-child(2)').dataset.year = D.getFullYear();
     if (document.querySelectorAll('.calendarbody tr').length < 6) {  // чтобы при перелистывании месяцев не "подпрыгивала" вся страница, добавляется ряд пустых клеток. Итог: всегда 6 строк для цифр
-        document.getElementById('calendarbody').innerHTML += '<tr><td> <td> <td> <td> <td> <td> <td> </tr>';
+        document.getElementById('calendarbody').innerHTML += '<tr> <td> <td> <td> <td> <td> <td> <td> </tr>';
     }
 }
 
 
+
+async function ColorTd() {
+
+    document.querySelectorAll('#calendarbody td.days').forEach(async (element) => {
+
+        let day = element.innerText;
+        let month = parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) + 1;
+        let year = document.querySelector('#calendar thead td:nth-child(2)').dataset.year;
+        let DateString = year + "/" + month + "/" + day;
+        let res = await Functions.getAppsbyDate(new Date(DateString))
+        let apps = res.arr1;
+        let keys = res.arr2;
+
+        if (apps.length != 0) {
+            let colors = []
+            let colorstr = ""
+            apps.forEach((app) => {
+                colors.push(app.color)
+                colorstr += app.color
+                colorstr += ","
+            })
+            colorstr = colorstr.slice(0, -1)
+
+            if (apps.length == 1) {
+                element.setAttribute('style', `background: ${colorstr};`);
+            }
+            else element.setAttribute('style', `background: linear-gradient(${colorstr});`);
+            //element.style.background =   lineargradient('#e66465', '#9198e5');
+
+        }
+
+    });
+
+}
+
+function AddClickListeners() {
+    document.querySelectorAll('#calendarbody td.days').forEach(e => e.addEventListener("click", async function (event) {
+        let day = this.innerText;
+        let month = parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) + 1;
+        let year = document.querySelector('#calendar thead td:nth-child(2)').dataset.year;
+        let CurrentDateString = year + "/" + month + "/" + day;
+        await ChangeDate(this, `${CurrentDateString}`);
+    }));
+}
+
+
+
+async function SetReminders(date1) {
+
+    let date = new Date(`${date1}`);
+    let res = await Functions.getAppsbyDate(date)
+    let apps = res.arr1;
+    let keys = res.arr2;
+
+
+    if (apps.length != 0) {
+        apps.forEach(async (elem) => {
+            let idapp = keys[apps.indexOf(elem)]
+            //alert(idapp)
+            let ref = firebase.database().ref(`mydb/appointments/${idapp}/reminders`)
+            await ref.once("value").then(function (rems) {
+                rems.forEach((rem) => {
+                    let remdate = new Date();
+                    remdate.setHours(rem.val().slice(0, 2))
+                    remdate.setMinutes(rem.val().slice(3, 5))
+                    remdate.setSeconds(0)
+                    let diff = new Date() - remdate
+                    if (diff < 0) {                        
+                        setTimeout(function () {
+                            alert("You have an appointment " + elem.title + " at " + elem.time1 + " - " + elem.time2)
+                        }, -diff)
+                    }
+
+                })
+
+            });
+        })
+    }
+}
+
+
+
+
+
 let Home = {
     render: async () => {
+        await firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                
+            } else {
+                Utils.navigateTo("#/signin")
+                // No user is signed in.
+            }
+        });
+
         let view =  /*html*/`
            <section class="section">
            <div>
@@ -249,7 +352,7 @@ let Home = {
          </div>
 
          <div>
-         <h2 id="h2list">Appointments</h2>
+         <h2 id="listhead">Appointments</h2>
          <ul class="listapp" id="listapp">
    
          </ul>
@@ -273,25 +376,27 @@ let Home = {
         calendar("calendar", new Date().getFullYear(), new Date().getMonth());
         // переключатель минус месяц
         document.querySelector('#calendar thead tr:nth-child(1) td:nth-child(1)').onclick = function () {
-            calendar("calendar", document.querySelector('#calendar thead td:nth-child(2)').dataset.year, parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) - 1);
+            calendar("calendar", document.querySelector('#calendar thead td:nth-child(2)').dataset.year,
+                parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) - 1);
+            AddClickListeners()
+            ColorTd()
         }
         // переключатель плюс месяц
         document.querySelector('#calendar thead tr:nth-child(1) td:nth-child(3)').onclick = function () {
-            calendar("calendar", document.querySelector('#calendar thead td:nth-child(2)').dataset.year, parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) + 1);
+            calendar("calendar", document.querySelector('#calendar thead td:nth-child(2)').dataset.year,
+                parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) + 1);
+            AddClickListeners()
+            ColorTd()
         }
 
-        document.querySelectorAll('#calendarbody td').forEach(e => e.addEventListener("click", function (event) {
-            let day = this.innerText;
-            let month = parseFloat(document.querySelector('#calendar thead td:nth-child(2)').dataset.month) + 1;
-            let year = document.querySelector('#calendar thead td:nth-child(2)').dataset.year;
-            let CurrentDateString = year + "/" + month + "/" + day;
-            ChangeDate(this, `${CurrentDateString}`);
-        }));
+        AddClickListeners()
+        ColorTd()
+
 
         var CurrentDateString = formattedDate(new Date());
         //var CurrentDateString = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + `${date.getDate()}`).slice(-2);
         ChangeDate(null, `${CurrentDateString}`);
-
+        SetReminders(CurrentDateString)
     }
 
 }

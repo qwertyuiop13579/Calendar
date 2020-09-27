@@ -13,7 +13,7 @@ import EditApp       from './views/pages/EditAppointment.js'
 import Navbar       from './views/components/Navbar.js'
 import Bottombar    from './views/components/Bottombar.js' 
 
-import Utils        from './services/Utils.js'
+import Utils        from './services/utils.js'
 
 // List of supported routes. Any url other than these routes will throw a 404 error
 const routes = {
@@ -25,7 +25,6 @@ const routes = {
     , '/addappointment'     : AddApp
     , '/appointments'        : AllApp
     , '/editappointment/:id'        : EditApp
-    , '/signout'            : EditApp
     
 };
 
@@ -34,9 +33,9 @@ const routes = {
 const router = async () => {
 
     // Lazy load view element:
-    const header = null || document.getElementById('header_container');
-    const content = null || document.getElementById('page_container');
-    const footer = null || document.getElementById('footer_container');
+    const header = document.getElementById('header_container');
+    const content = document.getElementById('page_container');
+    const footer = document.getElementById('footer_container');
     
     // Render the Header and footer of the page
     header.innerHTML = await Navbar.render();
@@ -53,7 +52,18 @@ const router = async () => {
     
     // Get the page from our hash of supported routes.
     // If the parsed URL is not in our list of supported routes, select the 404 page instead
-    let page = routes[parsedURL] ? routes[parsedURL] : Error404
+    let page=routes[parsedURL] ? routes[parsedURL] : Error404;
+
+    await firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            page = routes[parsedURL] ? routes[parsedURL] : Error404
+            
+        } else {
+            if(request.resource==="register") page = routes["/register"];
+            else page = routes['/signin'];
+            // No user is signed in.
+        }
+    });
     content.innerHTML = await page.render();
     await page.after_render();
   
