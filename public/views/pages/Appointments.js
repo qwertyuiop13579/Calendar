@@ -1,4 +1,4 @@
-import Utils from "../../services/Utils.js";
+import Utils from "../../services/utils.js";
 
 function formattedDate(d = new Date) {
     let month = String(d.getMonth() + 1);
@@ -43,7 +43,7 @@ async function ShowAllApps() {
             input.setAttribute("class", "hide");
             input.setAttribute(`id`, `hd${count}`);
             var label = document.createElement("label");
-            label.setAttribute("for", `hd${count}`);
+            label.setAttribute("style", `color:${element.color}`);
             label.innerText = element.title;
             var div = document.createElement("div");
             label.setAttribute("for", `hd${count}`);

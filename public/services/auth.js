@@ -1,4 +1,4 @@
-import Utils from "./Utils.js";
+import Utils from "./utils.js";
 
 let Auth = {
 
@@ -33,7 +33,7 @@ let Auth = {
                 if (error) {
                     console.log(error.message);
                 } else {
-                    Utils.navigateTo("/");
+                    Utils.navigateTo("/signin");
                 }
             });
         }).catch((error) => {
@@ -48,7 +48,8 @@ let Auth = {
 
     SignOut: () => {
         firebase.auth().signOut().then(function () {
-            Utils.navigateTo("/");
+            
+            
         }).catch(function (error) {
             // An error happened.
             let errorMessage = error.message;

@@ -1,4 +1,4 @@
-import Utils from './../../services/Utils.js'
+import Utils from '../../services/utils.js'
 import Functions from './../../services/data.js'
 
 

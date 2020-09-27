@@ -13,7 +13,7 @@ import EditApp       from './views/pages/EditAppointment.js'
 import Navbar       from './views/components/Navbar.js'
 import Bottombar    from './views/components/Bottombar.js' 
 
-import Utils        from './services/Utils.js'
+import Utils        from './services/utils.js'
 
 // List of supported routes. Any url other than these routes will throw a 404 error
 const routes = {
